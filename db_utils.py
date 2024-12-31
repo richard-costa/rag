@@ -35,9 +35,11 @@ def create_db(db_name: str):
 def create_pgvector_extension(db_name: str) -> None:
     conn = get_pg_connection(db_name=db_name)
     cur = conn.cursor()
+    conn.autocommit = True
     try:
-        cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
+        cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
         logging.info("pgvector extension created")
+
     except Exception as e:
         logging.error(e)
     finally:
@@ -86,3 +88,31 @@ def delete_all_databases():
         delete_db(db)
     
     logging.info("Deleted all databases")
+
+def create_embeddings_table(db_name: str, chunks: list[str], embeddings: list[list[float]], table_name: str = 'pg_embeddings'):
+    conn = get_pg_connection(db_name=db_name)
+    cur = conn.cursor()
+    conn.autocommit = True
+
+    create_query = '''
+            CREATE TABLE {table_name} (
+                id bigserial PRIMARY KEY, 
+                chunk text,
+                embedding vector
+            );
+            '''.format(table_name=table_name)
+
+    try:
+        cur.execute(create_query)
+        insert_query = 'INSERT INTO {table_name} (chunk, embedding) VALUES (%s, %s::vector);'.format(table_name=table_name)
+
+        for chunk, embedding in zip(chunks, embeddings):
+            cur.execute(insert_query, (chunk, embedding,))
+        
+        logging.info(f"Embeddings table '{table_name}' created and data inserted.")
+    except Exception as e:
+        logging.error(e)
+
+    finally:
+        cur.close()
+        conn.close()
