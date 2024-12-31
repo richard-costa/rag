@@ -1,12 +1,14 @@
 [project]
 name = "rag"
 version = "0.1.0"
-description = "A Python project to implement a rag system using postgresql pgvector extension and openai."
+description = "A Python project to implement a rag system using postgresql, pgvector and some other libraries."
 authors = ["Richard Costa <scosta.richard@gmail.com>"]
 license = "MIT"
 requires-python = ">=3.10"
 
 dependencies = [
+    "numpy>=2.2.1",
     "psycopg2>=2.9.6",
     "python-dotenv>=1.0.1",
+    "sentence-transformers>=3.3.1",
 ]
