@@ -96,7 +96,7 @@ def create_embeddings_table(db_name: str, chunks: list[str], embeddings: list[li
 
     create_query = '''
             CREATE TABLE {table_name} (
-                id bigserial PRIMARY KEY, 
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
                 chunk text,
                 embedding vector
             );
@@ -116,3 +116,4 @@ def create_embeddings_table(db_name: str, chunks: list[str], embeddings: list[li
     finally:
         cur.close()
         conn.close()
+
