@@ -1,7 +1,7 @@
 [project]
 name = "rag"
 version = "0.1.0"
-description = "A Python project to implement a rag system using postgresql, pgvector and some other libraries."
+description = "A Python project to implement a rag system using Postgres, PGVector and some other libraries."
 authors = ["Richard Costa <scosta.richard@gmail.com>"]
 license = "MIT"
 requires-python = ">=3.10"
