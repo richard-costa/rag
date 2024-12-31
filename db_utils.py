@@ -89,11 +89,10 @@ def delete_all_databases():
     
     logging.info("Deleted all databases")
 
-def create_embeddings_table(db_name: str, chunks: list[str], embeddings: list[list[float]], table_name: str = 'pg_embeddings'):
+def create_embeddings_table(db_name: str, table_name: str = 'pg_embeddings'):
     conn = get_pg_connection(db_name=db_name)
     cur = conn.cursor()
     conn.autocommit = True
-
     create_query = '''
             CREATE TABLE {table_name} (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
@@ -101,19 +100,34 @@ def create_embeddings_table(db_name: str, chunks: list[str], embeddings: list[li
                 embedding vector
             );
             '''.format(table_name=table_name)
-
+    
     try:
         cur.execute(create_query)
-        insert_query = 'INSERT INTO {table_name} (chunk, embedding) VALUES (%s, %s::vector);'.format(table_name=table_name)
-
-        for chunk, embedding in zip(chunks, embeddings):
-            cur.execute(insert_query, (chunk, embedding,))
-        
-        logging.info(f"Embeddings table '{table_name}' created and data inserted.")
+        logging.info(f"Embeddings table '{table_name}' created.")
     except Exception as e:
         logging.error(e)
-
     finally:
         cur.close()
         conn.close()
 
+def insert_data_into_table(db_name: str, chunks: list[str], embeddings: list[list[float]], table_name: str = 'pg_embeddings'):
+    conn = get_pg_connection(db_name=db_name)
+    cur = conn.cursor()
+    conn.autocommit = True
+    insert_query = 'INSERT INTO {table_name} (chunk, embedding) VALUES (%s, %s::vector);'.format(table_name=table_name)
+    
+    failed_chunks = 0
+    try:
+        for chunk, embedding in zip(chunks, embeddings):
+            try:
+                cur.execute(insert_query, (chunk, embedding,))
+            except Exception as e:
+                logging.error(f"Error inserting data into table '{table_name}': {e}")
+                failed_chunks += 1
+
+        logging.info(f"Data inserted into table '{table_name}'. Failed chunks: {failed_chunks}")
+    except Exception as e:
+        logging.error(e)
+    finally:
+        cur.close()
+        conn.close()
