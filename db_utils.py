@@ -3,7 +3,7 @@ import os
 
 from dotenv import load_dotenv
 from psycopg2 import connect
-from psycopg2.errors import DuplicateDatabase, InvalidCatalogName
+from psycopg2.errors import DuplicateDatabase, InvalidCatalogName, DuplicateTable
 from psycopg2.extensions import connection as PGConnection
 
 logging.basicConfig(level=logging.INFO)
@@ -87,7 +87,7 @@ def create_embeddings_table(db_name: str, table_name: str = 'pg_embeddings'):
     cur = conn.cursor()
     conn.autocommit = True
     create_query = '''
-            CREATE TABLE {table_name} (
+            CREATE TABLE IF NOT EXISTS {table_name} (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
                 chunk text,
                 embedding vector
