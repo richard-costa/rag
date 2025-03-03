@@ -38,11 +38,11 @@ def create_db(db_name: str):
 
 def create_pgvector_extension(db_name: str):
     conn = pg_connection(db_name=db_name)
-    cur = conn.cursor()
     conn.autocommit = True
-    cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
-    logging.info("pgvector extension created")
-    cur.close()
+    with conn.cursor() as cur:
+        cur.execute("CREATE EXTENSION IF NOT EXISTS pgvector;")
+        logging.info("pgvector extension created")
+    
     conn.close()
 
 def delete_db(db_name: str):
