@@ -2,9 +2,9 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from psycopg2 import connect
-from psycopg2.errors import DuplicateDatabase, InvalidCatalogName, DuplicateTable
-from psycopg2.extensions import connection as PGConnection
+from psycopg import connect
+from psycopg.errors import DuplicateDatabase, InvalidCatalogName, DuplicateTable
+from psycopg.connection import Connection as PGConnection
 
 logging.basicConfig(level=logging.INFO)
 load_dotenv(override=True)
@@ -20,13 +20,13 @@ def pg_connection(db_name: str) -> PGConnection:
 
 def create_db(db_name: str):
     try:
-        query = f'CREATE DATABASE {db_name};'
+        query = "CREATE DATABASE %s;"
         conn = pg_connection(db_name=os.getenv('POSTGRES_USER'))
         conn.autocommit = True
         with conn.cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(query, (db_name,))
 
-        logging.info(f"Database {db_name} created successfully")
+        logging.info(f"Database '{db_name}' created successfully")
     except DuplicateDatabase:
         logging.warning(f"Database '{db_name}' already exists.")
 
