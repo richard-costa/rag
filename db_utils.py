@@ -48,16 +48,16 @@ def create_pgvector_extension(db_name: str):
 def delete_db(db_name: str):
     conn = pg_connection(db_name=os.getenv('POSTGRES_USER'))
     conn.autocommit = True
-    cur = conn.cursor()
+    query = sql.SQL("DROP DATABASE {}").format(sql.Identifier(db_name))
     try:
-        cur.execute(f"DROP DATABASE {db_name}")
-        logging.info(f"Database {db_name} deleted")
-    
+        with conn.cursor() as cur:
+            cur.execute(query)
+            logging.info(f"Database {db_name} deleted")
+        
     except InvalidCatalogName:
         logging.warning(f"Database '{db_name}' does not exist.")
 
     finally:
-        cur.close()
         conn.close()
 
 def list_databases() -> list[str]:
