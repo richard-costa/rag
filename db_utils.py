@@ -2,9 +2,10 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from psycopg import connect
-from psycopg.errors import DuplicateDatabase, InvalidCatalogName, DuplicateTable
+from psycopg import connect, sql
 from psycopg.connection import Connection as PGConnection
+from psycopg.errors import (DuplicateDatabase, DuplicateTable,
+                            InvalidCatalogName)
 
 logging.basicConfig(level=logging.INFO)
 load_dotenv(override=True)
@@ -13,18 +14,19 @@ def pg_connection(db_name: str) -> PGConnection:
     return connect(
         host=os.getenv('POSTGRES_HOST'),
         port=int(os.getenv('POSTGRES_PORT')),
-        database=db_name,
+        dbname=db_name,
         user=os.getenv('POSTGRES_USER'),
         password=os.getenv('POSTGRES_PASSWORD')
     )
 
+        
 def create_db(db_name: str):
+    query = sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name))
     try:
-        query = "CREATE DATABASE %s;"
         conn = pg_connection(db_name=os.getenv('POSTGRES_USER'))
         conn.autocommit = True
         with conn.cursor() as cursor:
-            cursor.execute(query, (db_name,))
+            cursor.execute(query)
 
         logging.info(f"Database '{db_name}' created successfully")
     except DuplicateDatabase:
@@ -32,7 +34,7 @@ def create_db(db_name: str):
 
     finally:
         conn.close()
-        
+
 
 def create_pgvector_extension(db_name: str):
     conn = pg_connection(db_name=db_name)
