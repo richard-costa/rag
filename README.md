@@ -10,3 +10,14 @@ On linux, if you get the error `postgres.h: No such file or directory` when tryi
 sudo apt update
 sudo apt install postgresql-server-dev-all
 ```
+
+# Installing from `pyproject.toml`
+
+I'm not sure whether to keep the `requirements.txt` file or not, so if there's only a `pyproject.toml` file in this repo, a fast and easy way to install the project's dependencies is to use [uv](https://github.com/astral-sh):
+
+```
+python3 -m venv .venv
+source .venv/bin/activate
+pip install uv
+uv pip install -r pyproject.toml
+```
