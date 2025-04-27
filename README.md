@@ -11,6 +11,17 @@ sudo apt update
 sudo apt install postgresql-server-dev-all
 ```
 
+# `.env file`
+
+The `.env`file should have the following entries
+
+```
+POSTGRES_HOST = 'localhost'
+POSTGRES_PORT = '5432'
+POSTGRES_USER = 'postgres'
+POSTGRES_PASSWORD = # your password
+```
+
 # Installing from `pyproject.toml`
 
 I'm not sure whether to keep the `requirements.txt` file or not, so if there's only a `pyproject.toml` file in this repo, a fast and easy way to install the project's dependencies is to use [uv](https://github.com/astral-sh):
