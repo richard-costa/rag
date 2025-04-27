@@ -106,7 +106,7 @@ def insert_data_into_table(db_name: str, chunks: list[str], embeddings: list[lis
     conn = pg_connection(db_name=db_name)
     cur = conn.cursor()
     conn.autocommit = True
-    insert_query = 'INSERT INTO {table_name} (chunk, embedding) VALUES (%s, %s::vector);'.format(table_name=table_name)
+    insert_query = sql.SQL("INSERT INTO {table_name} (chunk, embedding) VALUES (%s, %s::vector);").format(table_name=sql.Identifier(table_name))
     
     failed_chunks = 0
 
