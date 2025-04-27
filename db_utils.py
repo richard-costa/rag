@@ -40,7 +40,7 @@ def create_pgvector_extension(db_name: str):
     conn = pg_connection(db_name=db_name)
     conn.autocommit = True
     with conn.cursor() as cur:
-        cur.execute("CREATE EXTENSION IF NOT EXISTS pgvector;")
+        cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
         logging.info("pgvector extension created")
     
     conn.close()
@@ -84,17 +84,17 @@ def delete_all_databases():
     
     logging.info("Deleted all databases")
 
-def create_embeddings_table(db_name: str, table_name: str = 'pg_embeddings'):
+def create_embeddings_table(db_name: str, table_name: str = 'pg_embeddings_test'):
     conn = pg_connection(db_name=db_name)
     cur = conn.cursor()
     conn.autocommit = True
-    create_query = '''
+    create_query = sql.SQL('''
             CREATE TABLE IF NOT EXISTS {table_name} (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
                 chunk text,
                 embedding vector
             );
-            '''.format(table_name=table_name)
+            ''').format(table_name=sql.Identifier(table_name))
     
     cur.execute(create_query)
     logging.info(f"Embeddings table '{table_name}' created.")
