@@ -19,7 +19,7 @@ def retrieve_from_pgvector(query: str,
                            retrieve_k = 5) -> list[tuple[str, None]] | list[tuple[str, float]]:
     
     conn = pg_connection(db_name=db_name)
-    embedded_query = embed_query(query).tolist()
+    embedded_query = embed_query(query)
     
     search_query = sql.SQL("""\
         SELECT chunk from {table_name}
