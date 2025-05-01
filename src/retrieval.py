@@ -120,4 +120,10 @@ def hybrid(
 
 
 if __name__ == "__main__":
-    print(hybrid('copenhagen', 'test_db'))
+    res = hybrid('copenhagen', 'test_db')
+    for r in res:
+        print(f"""\
+              chunk id: {r[0]}
+              chunk: {r[1]}
+              score: {r[2]}
+              """)
