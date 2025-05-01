@@ -30,16 +30,33 @@ def ensure_model_pulled(model=MODEL):
 
 def start_and_wait(host=HOST, timeout=60, interval=0.5):
     """Start Ollama server in background (if needed) and wait for it."""
+    try:
+        # Quick check if already running
+        r = requests.get(f"{host}/api/tags", timeout=2)
+        if r.ok:
+            print("Ollama server is already running.")
+            return True
+    except requests.ConnectionError:
+        print("Ollama server not running. Starting it...")
+
+    # Start in background
+    subprocess.Popen(["ollama", "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    # Wait loop
     start = time.time()
     while time.time() - start < timeout:
         try:
             r = requests.get(f"{host}/api/tags")
             if r.ok:
+                print("Ollama server started successfully.")
                 return True
         except requests.ConnectionError:
             pass
         time.sleep(interval)
+
+    print("Timed out waiting for Ollama server to start.")
     return False
+
 
 def generate_prompt(prompt: str):
     resp: ChatResponse = chat(
