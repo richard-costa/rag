@@ -32,3 +32,7 @@ source .venv/bin/activate
 pip install uv
 uv pip install -r pyproject.toml
 ```
+
+# Ollama
+
+The generation in RAG is currently done using [ollama](https://ollama.com/) and its python library [ollama-python](https://github.com/ollama/ollama-python). See installation ollama intallation instructions [here](https://github.com/ollama/ollama?tab=readme-ov-file).
