@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 from psycopg import sql
 
-from src.db_utils import pg_connection
-from src.embed import embed_query
+from db_utils import pg_connection
+from embed import embed_query
 
 
 @dataclass
