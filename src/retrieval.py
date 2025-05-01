@@ -60,8 +60,8 @@ def hybrid(
         rrf_k = 60,
         retrieve_k = 5,
         table_name: str = 'pg_embeddings_test',
-        distance_operator = Distances.cosine,
-        with_score: bool = True) -> list[tuple[str, None]] | list[tuple[str, float]]:
+        distance_operator = Distances.cosine
+        ) -> list[tuple[str, None]] | list[tuple[str, float]]:
     
     conn = pg_connection(db_name=db_name)
     embedded_query = embed_query(query)
