@@ -1,0 +1,67 @@
+import subprocess
+import time
+
+import ollama
+import requests
+from ollama import ChatResponse, chat
+
+MODEL = "smollm2:135m"
+HOST  = "http://127.0.0.1:11434"
+
+def ensure_ollama_installed():
+    try:
+        subprocess.run(["ollama", "--version"], check=True)
+    except subprocess.CalledProcessError:
+        print("Installing Ollama…")
+        subprocess.run("curl -fsSL https://ollama.com/install.sh | sh",
+                       shell=True, check=True)
+        print("Ollama installed successfully!")
+    else:
+        print("Ollama already installed.")
+
+def ensure_model_pulled(model=MODEL):
+    existing = ollama.list()  # returns a list of models already pulled
+    print(f"Existing models: {existing}")
+    if model not in existing:
+        print(f"Pulling model {model}…")
+        ollama.pull(model)
+    else:
+        print(f"Model {model} already present.")
+
+def start_and_wait(host=HOST, timeout=60, interval=0.5):
+    """Start Ollama server in background (if needed) and wait for it."""
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            r = requests.get(f"{host}/api/tags")
+            if r.ok:
+                return True
+        except requests.ConnectionError:
+            pass
+        time.sleep(interval)
+    return False
+
+def generate_prompt(prompt: str):
+    resp: ChatResponse = chat(
+        model=MODEL,
+        messages=[{"role": "user", "content": prompt}],
+        stream=False
+    )
+    return resp.message.content
+
+
+def delete_ollama_model(model_name: str = 'smollm2:135m'):
+    print(f"Attempting to delete model: {model_name}...")
+    
+    try:
+        ollama.delete(model_name)
+        print(f"Successfully deleted model: {model_name}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    ensure_ollama_installed()
+    ensure_model_pulled()
+    if not start_and_wait():
+        raise RuntimeError("Ollama server didn’t start in time")
+    print(generate_prompt("Why is the sky blue?"))
