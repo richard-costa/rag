@@ -20,13 +20,16 @@ def ensure_ollama_installed():
         print("Ollama already installed.")
 
 def ensure_model_pulled(model=MODEL):
-    existing = ollama.list()  # returns a list of models already pulled
-    print(f"Existing models: {existing}")
-    if model not in existing:
-        print(f"Pulling model {model}…")
-        ollama.pull(model)
+    """Ensure the embedding model is pulled locally using Ollama."""
+    existing_models = ollama.list()
+    existing_model_names = [m.model.split(':')[0] for m in existing_models['models']]
+    print(f"Existing models: {existing_model_names}")
+    
+    if model.value not in existing_model_names:
+        print(f"Pulling embedding model {model.value}…")
+        ollama.pull(model.value)
     else:
-        print(f"Model {model} already present.")
+        print(f"Embedding model {model.value} already present.")
 
 def start_and_wait(host=HOST, timeout=60, interval=0.5):
     """Start Ollama server in background (if needed) and wait for it."""
