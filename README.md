@@ -19,7 +19,7 @@ The `.env`file should have the following entries
 POSTGRES_HOST = 'localhost'
 POSTGRES_PORT = '5432'
 POSTGRES_USER = 'postgres'
-POSTGRES_PASSWORD = # your password
+POSTGRES_PASSWORD = <your password>
 ```
 
 # Installing from `pyproject.toml`
@@ -35,4 +35,4 @@ uv pip install -r pyproject.toml
 
 # Ollama
 
-The generation in RAG is currently done using [ollama](https://ollama.com/) and its python library [ollama-python](https://github.com/ollama/ollama-python). See installation ollama intallation instructions [here](https://github.com/ollama/ollama?tab=readme-ov-file).
+The generation in RAG is currently being done using [ollama](https://ollama.com/) and its python library [ollama-python](https://github.com/ollama/ollama-python). See ollama installation instructions [here](https://github.com/ollama/ollama?tab=readme-ov-file).
